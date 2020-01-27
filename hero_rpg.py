@@ -6,6 +6,7 @@
 # 2. do nothing - in which case the goblin will attack him anyway
 # 3. flee
 from random import randint
+from random import choice
 
 
 class Character:
@@ -32,8 +33,6 @@ class Character:
         
         your_injury = enemy.power-self.armor
 
-
-
         #20% chance of double damage
         n = randint(0,10)
         if n<=1:
@@ -50,6 +49,8 @@ class Character:
             self.health -= (your_injury*evade_p)
 
         #generate 20% of chance:
+        elif enemy.health <=0:
+            print(f"The {enemy.name} is dead already, don't waste your energy!")
         elif enemy.health >0:
             n = randint(0,10)
             if n<=1:
@@ -114,7 +115,7 @@ class Character:
     
     def print_status(self):
         if self.name == "hero":
-            print(f"You have {self.health} health and {self.power} power with {self.armor} armor and {self.evade} evade .You have {self.coin} coins. ")
+            print(f"You have {self.health} health and {self.power} power with {self.armor} armor and {self.evade} evade. You have {self.coin} coins. ")
         else:
             print(f"The {self.name} has {self.health} health and {self.power} power, the bounty is {self.bounty}")            
 
@@ -238,48 +239,54 @@ def main():
     store = Store()
     while hero.alive() and (zombie.alive() or goblin.alive() or shadow.alive() or blackhole.alive() or master.alvie()):
         hero.print_status()
-        goblin.print_status()
-        zombie.print_status()
-        medic.print_status()
-        shadow.print_status()
-        blackhole.print_status()
-        print()
-        print("What do you want to do?\n\n"
-        "1. fight goblin\n"
-        "2. attack zombie\n"
-        "3. attack shadow\n"
-        "4. attack blackhole\n"
+
+
+        print("What do you want to do?\n"
+        "f. Find a enemy to attack\n"
+        "p. practice with master\n"
         "m. get medic\n"
         "s. go to store to purchase\n"
-        "f. flee\n"
+        "l. list all character's status\n"
+        "r. run away\n"
         "> ", end=' ')
         raw_input = input()
-        if raw_input == "1":
-        # Hero attacks goblin
-            if goblin.health <=0:
-                print("The goblin is dead already, don't waste your energy!")
+
+        if raw_input =="f":
+
+            enemies =[goblin,zombie,shadow,master,medic,blackhole]
+            def pick_a_fight():
+                return choice(enemies)
+            
+            char = pick_a_fight()
+
+            print(f"you meet {char.name}, do you want to fight?\n"
+                    "y, Yes\n"
+                    "n, No, I want to fleet \n"
+                    "> ")
+            char.print_status()
+            raw_input = input()
+
+            if raw_input== 'y':
+                hero.attack(char)
             else:
-                hero.attack(goblin)
+                exit
+        
+        elif raw_input == 'p':
+            hero.attack(master)
 
-        elif raw_input == "2":
-        # Hero attacks Zombie
-            hero.attack(zombie)
-
-        elif raw_input == "3":
-            if goblin.health <=0:
-                print("The shadow is dead already, don't waste your energy!")
-            else:
-                hero.attack(shadow)
-
-        elif raw_input == "4":
-            if blackhole.health <=0:
-                print("The blackhole is dead already, don't waste your energy!")
-            else:
-                hero.attack(blackhole)
-
-        elif raw_input == "m":
-            #get medic
+        elif raw_input == 'm':
             hero.attack(medic)
+
+        elif raw_input == 'l':
+            # for char in enemies:
+            #     char.print_status()
+            hero.print_status()
+            goblin.print_status()
+            zombie.print_status()
+            medic.print_status()
+            shadow.print_status()
+            blackhole.print_status()
+
 
         elif raw_input == "s":
             #purchase item
@@ -288,9 +295,62 @@ def main():
         elif raw_input == "f":
             print("Goodbye.")
             break
-
         else:
             print(f"Invalid input {raw_input}")
+
+        # print("What do you want to do?\n\n"
+        # "1. fight goblin\n"
+        # "2. attack zombie\n"
+        # "3. attack shadow\n"
+        # "4. attack blackhole\n"
+        # "5. attack master\n"
+        # "m. get medic\n"
+        # "s. go to store to purchase\n"
+        # "f. flee\n"
+        # "> ", end=' ')
+        # raw_input = input()
+
+
+    # while hero.alive() and (zombie.alive() or goblin.alive() or shadow.alive() or blackhole.alive() or master.alvie()):
+    #     hero.print_status()
+    #     goblin.print_status()
+    #     zombie.print_status()
+    #     medic.print_status()
+    #     shadow.print_status()
+    #     blackhole.print_status()
+    #     print()
+    #     print("What do you want to do?\n\n"
+    #     "1. fight goblin\n"
+    #     "2. attack zombie\n"
+    #     "3. attack shadow\n"
+    #     "4. attack blackhole\n"
+    #     "5. attack master\n"
+    #     "m. get medic\n"
+    #     "s. go to store to purchase\n"
+    #     "f. flee\n"
+    #     "> ", end=' ')
+    #     raw_input = input()
+    #     if raw_input == "1":
+    #         hero.attack(goblin)
+
+    #     elif raw_input == "2":
+    #         hero.attack(zombie)
+
+    #     elif raw_input == "3":
+    #         hero.attack(shadow)
+
+    #     elif raw_input == "4":
+    #         hero.attack(blackhole)
+        
+    #     elif raw_input =="5":
+    #         hero.attack(master)
+
+        # elif raw_input == "m":
+        #     hero.attack(medic)
+        
+
+
+
 
 
 
