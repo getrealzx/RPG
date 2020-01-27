@@ -16,7 +16,24 @@ class Character:
     def alive(self):
         return self.health > 0
 
+        
+
+
     def attack(self,enemy):
+        # generate increase of probability with evade points, close to 100%
+
+        e = self.evade
+        n = randint(0,e+20)
+        if n < e:
+            evade_p=0
+            print("Luckily, you just avoided enemy's attack")
+        else:
+            evade_p=1
+        
+        your_injury = enemy.power-self.armor
+
+
+
         #20% chance of double damage
         n = randint(0,10)
         if n<=1:
@@ -28,8 +45,9 @@ class Character:
         your_damage = (1+P)*self.power        
 
         if enemy.name=="zombie":
-            self.health -= (enemy.power-self.armor)
+
             enemy.health -= your_damage
+            self.health -= (your_injury*evade_p)
 
         #generate 20% of chance:
         elif enemy.health >0:
@@ -60,7 +78,7 @@ class Character:
                     print("The shadow just dodged your attack!")
                 your_damage = P*your_damage
                 enemy.health -= your_damage
-                self.health -= (enemy.power-self.armor)
+                self.health -= (your_injury*evade_p)
 
             if enemy.name=="backhole":
                 n = randint(0,10)
@@ -72,30 +90,31 @@ class Character:
                     print(f"The {enemy.name} got doubled {your_damage}.")
                 else:
                     enemy.health -= your_damage
-                self.health -= (enemy.power-self.armor)
+                self.health -= (your_injury*evade_p)
             
             if enemy.name=="master":
                 n = randint(0,100)
                 if n<=4:
-                    self.health -= (enemy.power-self.armor)
+                    self.health -= (your_injury*evade_p)
                 self.power = 1.2*self.power
     
             else:
                 enemy.health -= your_damage
+
 
             if enemy.health < 1:
                 self.coin += enemy.bounty
                 print(f"The {enemy.name} is dead, you get {enemy.bounty} coins.")
 
         print(f"\nYou make {your_damage} damage to {enemy.name}.")
-        print(f"The {enemy.name} does {(enemy.power-self.armor)} damage to you.")
+        print(f"The {enemy.name} does {your_injury} damage to you.")
         
         if self.health < 1:
             print("You are DEAD!! :'( )")
     
     def print_status(self):
         if self.name == "hero":
-            print(f"You have {self.health} health and {self.power} power with {self.armor} armor.You have {self.coin} coins. ")
+            print(f"You have {self.health} health and {self.power} power with {self.armor} armor and {self.evade} evade .You have {self.coin} coins. ")
         else:
             print(f"The {self.name} has {self.health} health and {self.power} power, the bounty is {self.bounty}")            
 
@@ -105,6 +124,7 @@ class Hero(Character):
         self.name = "hero"
         self.coin = 5
         self.armor = 0
+        self.evade = 2
         super(Hero, self).__init__(health, power)
 
     def buy(self,item):
@@ -177,13 +197,21 @@ class Armor:
         hero.armor += 2
         print(f"{hero.name}'s armor increased to {hero.armor}.")
 
+class Evade:
+    def __init__(self):
+        self.cost = 2
+        self.name = 'evade'
+    def apply(self,hero):
+        hero.evade += 2
+        print(f"{hero.name}'s evade increased to {hero.evade}.")
+
+
 class Store:
     tonic = SuperTonic()
-    # armor = Armor()
-    # evade = Evade()
+    evade = Evade()
     sword = Sword()
     armor = Armor()
-    items = [tonic, sword, armor]
+    items = [tonic, sword, armor, evade]
 
 
     def do_shopping(self, hero):
